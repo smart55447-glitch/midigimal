@@ -1228,6 +1228,108 @@ dd {
   font-weight: 700;
 }
 
+.contract-checklist {
+  background: #ffffff;
+  border: 1px solid #d8e1ec;
+  border-radius: 18px;
+  box-shadow: 0 16px 36px rgba(20, 35, 54, 0.08);
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+}
+
+.contract-checklist-head {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+}
+
+.contract-checklist-head > span {
+  background: #2f62e6;
+  border-radius: 999px;
+  color: #ffffff;
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 11px;
+}
+
+.contract-checklist h2 {
+  color: #172235;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.contract-checklist p {
+  color: #647286;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 4px 0 0;
+}
+
+.check-progress {
+  background: #eef4ff;
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.check-progress span {
+  background: #2f62e6;
+  display: block;
+  height: 100%;
+  transition: width 180ms ease;
+}
+
+.contract-checklist ul {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.contract-checklist li {
+  background: #f8fbff;
+  border: 1px solid #e7edf5;
+  border-radius: 12px;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.contract-checklist li.done {
+  background: #eef8f6;
+  border-color: #bfe4dc;
+}
+
+.contract-checklist label {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 11px;
+  line-height: 1.5;
+  padding: 13px 14px;
+}
+
+.contract-checklist input {
+  accent-color: #2f62e6;
+  flex: 0 0 auto;
+  height: 18px;
+  width: 18px;
+}
+
+.contract-checklist label span {
+  color: #26364d;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.contract-checklist li.done label span {
+  color: #47606d;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
 .mini-card small {
   color: #486178;
   font-weight: 400;

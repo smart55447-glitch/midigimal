@@ -241,16 +241,18 @@ function optionMatchesAllEnvironmentTags(option: HousingOption, tags: Environmen
 
 function independenceChecklist(condition: Condition) {
   const items = [
-    '월세와 관리비를 함께 확인하세요.',
-    '보증금 보호를 위해 전입신고와 확정일자를 확인하세요.',
-    '공고별 소득·자산 기준은 공식 공고문을 확인하세요.',
+    '월세와 관리비를 함께 확인했어요',
+    '전입신고 가능 여부를 확인했어요',
+    '확정일자 필요 여부를 확인했어요',
+    '등기부등본/권리관계를 확인했어요',
+    '공고별 소득·자산 기준을 확인했어요',
   ]
-  if (condition.mobilityPreference !== '상관없음') items.push(`${condition.mobilityPreference} 기준으로 실제 통학·출근 동선을 확인하세요.`)
+  if (condition.mobilityPreference !== '상관없음') items.push('실제 통학·출근 동선을 확인했어요')
   if (condition.environmentPreferences.length === 0) items.push('생활환경 조건을 선택하면 지도에서 함께 확인할 수 있어요.')
-  if (condition.environmentPreferences.includes('역세권')) items.push('역세권을 선택했으니 실제 역 출입구까지의 도보 동선을 확인하세요.')
-  if (condition.environmentPreferences.some((item) => ['도서관 근처', '공원/산책로 근처'].includes(item))) items.push('도서관·공원 접근성은 지도 상세 카드의 주변환경 탭에서 확인하세요.')
-  if (condition.environmentPreferences.includes('마트·편의점 근처') || condition.independencePriorities.includes('생활편의시설 가까이 살기')) items.push('마트·편의점, 병원·약국 같은 생활편의시설은 실제 생활 반경 기준으로 확인하세요.')
-  if (condition.independencePriorities.includes('안전 인프라 확인하기')) items.push('안심귀갓길 인접 여부, CCTV/비상벨 데이터, 지구대/파출소 접근성을 확인하세요.')
+  if (condition.environmentPreferences.includes('역세권')) items.push('역 출입구까지의 실제 도보 동선을 확인했어요')
+  if (condition.environmentPreferences.some((item) => ['도서관 근처', '공원/산책로 근처'].includes(item))) items.push('도서관·공원 접근성을 지도 상세 카드에서 확인했어요')
+  if (condition.environmentPreferences.includes('마트·편의점 근처') || condition.independencePriorities.includes('생활편의시설 가까이 살기')) items.push('마트·편의점, 병원·약국 같은 생활편의시설을 확인했어요')
+  if (condition.independencePriorities.includes('안전 인프라 확인하기')) items.push('안심귀갓길, CCTV/비상벨, 지구대/파출소 접근성을 확인했어요')
   return items
 }
 
@@ -562,7 +564,7 @@ function Header({ compareCount, openPage, page }: { compareCount: number; openPa
 
   return (
     <header className="site-header">
-      <button className="brand" onClick={() => openPage('home')} type="button">청년거주가이드맵</button>
+      <button className="brand" onClick={() => openPage('home')} type="button">청년 1인가구 가이드맵</button>
       <nav aria-label="주요 메뉴">
         {items.map(([key, label]) => (
           <button className={page === key ? 'active' : ''} key={key} onClick={() => openPage(key)} type="button">
@@ -579,9 +581,9 @@ function HomePage({ openPage, toggleCompare }: { openPage: (page: Page) => void;
     <>
       <section className="landing-hero" style={{ backgroundImage: `linear-gradient(90deg, rgba(20, 31, 48, 0.72), rgba(20, 31, 48, 0.1)), url(${heroImage})` }}>
         <div className="hero-content">
-          <p>청년 거주 가이드맵</p>
+          <p>청년 1인가구 가이드맵</p>
           <h1>처음 혼자 사는 청년을 위한 거주 가이드맵</h1>
-          <strong>처음 혼자 사는 청년을 위한 주거지원·생활환경 비교 지도</strong>
+          <strong>처음 혼자 사는 청년 1인가구를 위한 주거지원·생활환경 비교 가이드</strong>
           <span>주거지원, 공공임대, 월세지원뿐 아니라 역세권, 통학권, 공원·도서관·생활편의시설까지 함께 비교해 나에게 맞는 거주 선택지를 찾아보세요.</span>
           <div>
             <button onClick={() => openPage('recommend')} type="button">내 조건으로 추천받기</button>
@@ -635,7 +637,7 @@ function HomePage({ openPage, toggleCompare }: { openPage: (page: Page) => void;
         <div className="section-copy">
           <p>WHY THIS MATTERS</p>
           <h2>지원사업, 위치, 생활환경, 첫 독립 판단을 함께 봅니다.</h2>
-          <span>청년거주가이드맵은 공고를 보여주는 데서 끝나지 않고, 이 위치가 내 생활에 맞는지까지 판단할 수 있도록 도와줍니다.</span>
+          <span>청년 1인가구 가이드맵은 공고를 보여주는 데서 끝나지 않고, 이 위치가 내 생활에 맞는지까지 판단할 수 있도록 도와줍니다.</span>
         </div>
         <div className="dark-cards">
           <article><strong>주거지원 비교</strong><span>청년 월세지원, 행복주택, 청년매입임대, 버팀목 전세대출처럼 헷갈리는 제도를 조건별로 비교해요.</span></article>
@@ -649,7 +651,7 @@ function HomePage({ openPage, toggleCompare }: { openPage: (page: Page) => void;
         <div className="section-copy">
           <p>SERVICE</p>
           <h2>지도에서 찾은 집과 받을 수 있는 혜택, 생활환경을 연결합니다.</h2>
-          <span>청년거주가이드맵은 주거지원 공고를 보여주는 데서 끝나지 않고, 이 위치가 내 생활에 맞는지까지 함께 판단할 수 있도록 도와줍니다.</span>
+          <span>청년 1인가구 가이드맵은 주거지원 공고를 보여주는 데서 끝나지 않고, 이 위치가 내 생활에 맞는지까지 함께 판단할 수 있도록 도와줍니다.</span>
         </div>
       </section>
     </>
@@ -1074,6 +1076,95 @@ function recommendationReason(condition: Condition, title: string) {
   return `추천 이유: ${locationText} · 만 ${condition.age}세 · ${homeText}을 기준으로 ${title}을 먼저 확인할 필요가 있어요.${envText}`
 }
 
+function ContractChecklist({ items }: { items: string[] }) {
+  const storageKey = 'youth-single-household-contract-checklist'
+  const [checkedItems, setCheckedItems] = useState<string[]>([])
+  const [hydrated, setHydrated] = useState(false)
+
+  const readStoredItems = () => {
+    try {
+      const saved = window.localStorage?.getItem(storageKey)
+      if (saved) return JSON.parse(saved) as string[]
+    } catch {
+      // localStorage can be unavailable in some embedded browser contexts.
+    }
+
+    const cookieValue = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith(`${storageKey}=`))
+      ?.split('=')[1]
+
+    if (!cookieValue) return []
+    try {
+      return JSON.parse(decodeURIComponent(cookieValue)) as string[]
+    } catch {
+      return []
+    }
+  }
+
+  const writeStoredItems = (nextItems: string[]) => {
+    const serialized = JSON.stringify(nextItems)
+    try {
+      window.localStorage?.setItem(storageKey, serialized)
+      return
+    } catch {
+      // Fall through to cookie storage.
+    }
+    document.cookie = `${storageKey}=${encodeURIComponent(serialized)}; path=/; max-age=31536000; samesite=lax`
+  }
+
+  useEffect(() => {
+    setCheckedItems(readStoredItems())
+    setHydrated(true)
+  }, [])
+
+  useEffect(() => {
+    if (!hydrated) return
+    const validCheckedItems = checkedItems.filter((item) => items.includes(item))
+    if (validCheckedItems.length !== checkedItems.length) {
+      setCheckedItems(validCheckedItems)
+      return
+    }
+    writeStoredItems(validCheckedItems)
+  }, [checkedItems, items])
+
+  const toggleItem = (item: string) => {
+    setCheckedItems((current) => (
+      current.includes(item) ? current.filter((checked) => checked !== item) : [...current, item]
+    ))
+  }
+  const completedCount = checkedItems.filter((item) => items.includes(item)).length
+  const progress = items.length ? Math.round((completedCount / items.length) * 100) : 0
+
+  return (
+    <section className="contract-checklist">
+      <div className="contract-checklist-head">
+        <span>필수</span>
+        <div>
+          <h2>계약 전 꼭 확인하세요</h2>
+          <p>총 {items.length}개 중 {completedCount}개 완료</p>
+        </div>
+      </div>
+      <div className="check-progress" aria-label={`체크리스트 완료율 ${progress}%`}>
+        <span style={{ width: `${progress}%` }} />
+      </div>
+      <ul>
+        {items.map((item) => {
+          const checked = checkedItems.includes(item)
+          return (
+            <li className={checked ? 'done' : ''} key={item}>
+              <label>
+                <input checked={checked} onChange={() => toggleItem(item)} type="checkbox" />
+                <span>{item}</span>
+              </label>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
+  )
+}
+
 function RecommendPage({ condition, setCondition, setPage, setSelectedHousingId, toggleCompare }: {
   condition: Condition
   setCondition: (condition: Condition) => void
@@ -1116,6 +1207,10 @@ function RecommendPage({ condition, setCondition, setPage, setSelectedHousingId,
     })
     return Array.from(unique.values()).slice(0, 3)
   }, [recommendedHousing, submittedCondition])
+
+  const checklistItems = useMemo(() => (
+    submittedCondition ? independenceChecklist(submittedCondition) : []
+  ), [submittedCondition])
 
   const updateCondition = (nextCondition: Condition) => {
     setCondition(nextCondition)
@@ -1261,16 +1356,7 @@ function RecommendPage({ condition, setCondition, setPage, setSelectedHousingId,
                 </article>
               ))}
             </section>
-            <section>
-              <h2>첫 독립 체크포인트</h2>
-              {independenceChecklist(submittedCondition).map((item) => (
-                <article className="mini-card" key={item}>
-                  <span>체크</span>
-                  <h3>계약 전 확인</h3>
-                  <p>{item}</p>
-                </article>
-              ))}
-            </section>
+            <ContractChecklist items={checklistItems} />
           </>
         )}
       </div>
@@ -1372,7 +1458,7 @@ function Detail({ title, items }: { title: string; items: string[] }) {
 function Footer() {
   return (
     <footer className="footer">
-      <div><strong>청년거주가이드맵</strong><span>처음 혼자 사는 청년을 위한 주거지원·생활환경 비교 지도 · 마지막 확인일: 2026.06.14</span></div>
+      <div><strong>청년 1인가구 가이드맵</strong><span>처음 혼자 사는 청년 1인가구를 위한 주거지원·생활환경 비교 가이드 · 마지막 확인일: 2026.06.14</span></div>
       <div className="footer-contact"><span>문의 이메일</span><a href="mailto:smart55447@naver.com">smart55447@naver.com</a></div>
     </footer>
   )
