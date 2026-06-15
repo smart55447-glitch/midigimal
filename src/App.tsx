@@ -239,25 +239,18 @@ function optionMatchesAllEnvironmentTags(option: HousingOption, tags: Environmen
   return tags.every((tag) => optionMatchesEnvironment(option, tag))
 }
 
-function environmentReason(condition: Condition) {
-  const reasons: string[] = []
-  if (condition.environmentPreferences.includes('역세권')) reasons.push('역세권을 중요하게 선택했기 때문에 지하철 도보권 주거 옵션을 우선 확인해요.')
-  if (condition.environmentPreferences.some((item) => ['도서관 근처', '공원/산책로 근처'].includes(item))) reasons.push('도서관과 공원 조건을 선택해서 학업·산책 환경을 함께 확인할 수 있게 안내해요.')
-  if (condition.environmentPreferences.includes('안전 인프라 확인') || condition.independencePriorities.includes('안전 인프라 확인하기')) reasons.push('안전 인프라 확인을 선택했기 때문에 안심귀갓길, CCTV·비상벨, 지구대 접근성 정보를 함께 보도록 안내해요.')
-  if (condition.independencePriorities.includes('월세 부담 줄이기')) reasons.push('월세 부담 줄이기를 선택했기 때문에 월세지원과 공공임대를 먼저 확인하도록 추천해요.')
-  if (condition.independencePriorities.includes('생활편의시설 가까이 살기')) reasons.push('생활편의시설 접근성을 선택해서 병원·약국, 마트·편의점 확인이 필요한 옵션을 함께 보여줘요.')
-  if (reasons.length === 0) reasons.push('선택한 생활환경 조건을 기준으로 역 거리, 통학권, 생활편의시설, 안전 인프라 확인 항목을 함께 검토해요.')
-  return reasons
-}
-
 function independenceChecklist(condition: Condition) {
   const items = [
-    '월 임대료와 관리비를 합쳐 실제 매달 부담을 확인하세요.',
-    '계약 전 등기부등본, 보증금 보호, 공고별 자격 조건을 확인하세요.',
+    '월세와 관리비를 함께 확인하세요.',
+    '보증금 보호를 위해 전입신고와 확정일자를 확인하세요.',
+    '공고별 소득·자산 기준은 공식 공고문을 확인하세요.',
   ]
   if (condition.mobilityPreference !== '상관없음') items.push(`${condition.mobilityPreference} 기준으로 실제 통학·출근 동선을 확인하세요.`)
+  if (condition.environmentPreferences.length === 0) items.push('생활환경 조건을 선택하면 지도에서 함께 확인할 수 있어요.')
+  if (condition.environmentPreferences.includes('역세권')) items.push('역세권을 선택했으니 실제 역 출입구까지의 도보 동선을 확인하세요.')
+  if (condition.environmentPreferences.some((item) => ['도서관 근처', '공원/산책로 근처'].includes(item))) items.push('도서관·공원 접근성은 지도 상세 카드의 주변환경 탭에서 확인하세요.')
+  if (condition.environmentPreferences.includes('마트·편의점 근처') || condition.independencePriorities.includes('생활편의시설 가까이 살기')) items.push('마트·편의점, 병원·약국 같은 생활편의시설은 실제 생활 반경 기준으로 확인하세요.')
   if (condition.independencePriorities.includes('안전 인프라 확인하기')) items.push('안심귀갓길 인접 여부, CCTV/비상벨 데이터, 지구대/파출소 접근성을 확인하세요.')
-  if (condition.independencePriorities.includes('생활편의시설 가까이 살기')) items.push('병원·약국, 마트·편의점, 공공시설이 생활 반경 안에 있는지 지도에서 확인하세요.')
   return items
 }
 
@@ -1227,7 +1220,7 @@ function RecommendPage({ condition, setCondition, setPage, setSelectedHousingId,
             <div className="recommend-result-heading">
               <span>선택한 조건 요약</span>
               <strong>{conditionSummary(submittedCondition)}</strong>
-              <small>먼저 선택한 거주 조건에 맞는 주거 옵션을 추렸고, 그다음 연결 가능한 지원사업을 추천했어요.</small>
+              <small>먼저 선택한 조건에 맞는 주거 옵션을 추렸고, 그다음 연결 가능한 지원사업을 추천했어요.</small>
               <div className="filter-chip-row" aria-label="추천에 적용된 조건">
                 {submittedConditionChips.map((chip) => (
                   <button key={chip.key} onClick={() => {
@@ -1269,24 +1262,12 @@ function RecommendPage({ condition, setCondition, setPage, setSelectedHousingId,
               ))}
             </section>
             <section>
-              <h2>생활환경 체크포인트</h2>
-              {environmentReason(submittedCondition).map((item) => (
-                <article className="mini-card" key={item}>
-                  <span>생활환경</span>
-                  <h3>지도에서 함께 확인하세요</h3>
-                  <p>{item}</p>
-                  <button onClick={() => setPage('map')} type="button">지도로 생활환경 보기</button>
-                </article>
-              ))}
-            </section>
-            <section>
               <h2>첫 독립 체크포인트</h2>
               {independenceChecklist(submittedCondition).map((item) => (
                 <article className="mini-card" key={item}>
                   <span>체크</span>
                   <h3>계약 전 확인</h3>
                   <p>{item}</p>
-                  <button onClick={() => setPage('map')} type="button">지도에서 주변환경 확인하기</button>
                 </article>
               ))}
             </section>
