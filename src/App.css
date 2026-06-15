@@ -1356,6 +1356,62 @@ dd {
   justify-self: start;
 }
 
+.compare-empty {
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+}
+
+.secondary-compare {
+  display: grid;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.secondary-compare .section-copy {
+  margin-bottom: 0;
+}
+
+.compare-notice {
+  color: #647286;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+
+.compare-head-cell {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  min-width: 180px;
+}
+
+.compare-head-cell strong {
+  color: #172235;
+  font-weight: 700;
+}
+
+.compare-head-cell button,
+thead th > button {
+  background: #ffffff;
+  border: 1px solid #d8e1ec;
+  border-radius: 999px;
+  color: #405169;
+  font-size: 12px;
+  font-weight: 600;
+  min-height: 30px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.compare-row-group {
+  color: #244eb8;
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
 .empty-state {
   border: 1px dashed #b9c8da;
   border-radius: 14px;
