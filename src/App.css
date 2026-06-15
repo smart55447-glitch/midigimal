@@ -1168,13 +1168,24 @@ dd {
 }
 
 .recommend-results {
+  align-items: start;
   display: grid;
   gap: 20px;
+  grid-auto-rows: auto;
+  min-height: 0;
 }
 
 .recommend-results section {
+  align-content: start;
+  align-self: start;
   display: grid;
   gap: 14px;
+  margin-top: 0;
+  min-height: 0;
+}
+
+.recommend-results section h2 {
+  margin-bottom: 0;
 }
 
 .recommend-cta-row {

@@ -309,7 +309,7 @@ function conditionChips(condition: Condition) {
   condition.environmentPreferences.forEach((tag) => chips.push({ key: `environment:${tag}`, label: tag }))
   condition.independencePriorities.forEach((item) => chips.push({ key: `priority:${item}`, label: item }))
   if (condition.noHome) chips.push({ key: 'noHome', label: '무주택' })
-  chips.push({ key: 'targetGroup', label: condition.targetGroup })
+  if (condition.targetGroup !== '청년') chips.push({ key: 'targetGroup', label: condition.targetGroup })
   return chips
 }
 
@@ -325,7 +325,7 @@ function removeConditionChip(condition: Condition, key: string): Condition {
   if (key.startsWith('environment:')) return { ...condition, environmentPreferences: condition.environmentPreferences.filter((tag) => tag !== key.replace('environment:', '')) }
   if (key.startsWith('priority:')) return { ...condition, independencePriorities: condition.independencePriorities.filter((item) => item !== key.replace('priority:', '')) }
   if (key === 'noHome') return { ...condition, noHome: false }
-  if (key === 'targetGroup') return { ...condition, targetGroup: initialCondition.targetGroup }
+  if (key === 'targetGroup') return { ...condition, targetGroup: '청년' }
   return condition
 }
 
