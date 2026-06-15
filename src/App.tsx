@@ -1299,7 +1299,7 @@ function RecommendPage({ addHousingCompare, condition, isCompared, setCondition,
       ))
       .map((item) => ({ item, score: scoreHousing(submittedCondition, item) }))
       .sort((a, b) => b.score - a.score)
-      .slice(0, 3)
+      .slice(0, 2)
   }, [submittedCondition])
 
   const connectedRecommendedBenefits = useMemo(() => {
