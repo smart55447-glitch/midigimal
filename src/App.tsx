@@ -129,7 +129,7 @@ function scheduleText(option: HousingOption) {
 }
 
 function regionMatch(selected: '전체' | BenefitRegion, region: BenefitRegion) {
-  return selected === '전체' || region === '전국' || selected === region
+  return selected === '전체' || region === '전국' || selected === region || region.includes(selected)
 }
 
 function uniqueOptions(items: string[]) {
@@ -182,10 +182,10 @@ function connectedBenefits(option: HousingOption) {
   return benefits
     .slice(0, 5)
     .map((benefit) => {
-      if (option.type === '행복주택' && benefit.id === 'lh-happy-housing') return { benefit, label: '신청 가능' }
-      if (option.type === '청년매입임대' && benefit.id === 'youth-purchase-rental') return { benefit, label: '신청 가능' }
-      if (option.monthlyRent <= 60 && benefit.id === 'youth-monthly-rent') return { benefit, label: '조건 확인 필요' }
-      if (option.deposit >= 1500 && benefit.id === 'youth-butimok-loan') return { benefit, label: '확인 필요' }
+      if (option.type === '행복주택' && benefit.id === 'happy-housing') return { benefit, label: '신청 가능' }
+      if (option.type === '청년매입임대' && benefit.id === 'lh-youth-purchase-rental') return { benefit, label: '신청 가능' }
+      if (option.monthlyRent <= 60 && benefit.id === 'seoul-youth-monthly-rent') return { benefit, label: '조건 확인 필요' }
+      if (option.deposit >= 1500 && benefit.id === 'seoul-youth-deposit-interest') return { benefit, label: '확인 필요' }
       return { benefit, label: '해당 낮음' }
     })
     .filter((item) => item.label !== '해당 낮음')
@@ -627,6 +627,7 @@ function HomePage({ openPage, toggleCompare }: { openPage: (page: Page) => void;
               <span>{benefit.status}</span>
               <h3>{benefit.title}</h3>
               <p>{benefit.summary}</p>
+              <small>출처: {benefit.sourceName} · 마지막 확인일: {benefit.updatedAt}</small>
               <button onClick={() => toggleCompare('benefit', benefit.id)} type="button">비교함에 담기</button>
             </article>
           ))}
@@ -1054,6 +1055,8 @@ function BenefitsPage({ isCompared, setSelectedBenefit, toggleCompare }: {
               <div><dt>신청 조건</dt><dd>{benefit.conditions.join(', ')}</dd></div>
               <div><dt>신청 난이도</dt><dd>{benefit.difficulty}</dd></div>
               <div><dt>중복 가능</dt><dd>{benefit.canCombineWith.length ? benefit.canCombineWith.join(', ') : '공고별 확인'}</dd></div>
+              <div><dt>출처</dt><dd>{benefit.sourceName}</dd></div>
+              <div><dt>마지막 확인일</dt><dd>{benefit.updatedAt}</dd></div>
             </dl>
             <a href={benefit.officialUrl} rel="noreferrer" target="_blank">공식 링크: {benefit.sourceName}</a>
             <div className="button-row">
