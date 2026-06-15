@@ -1,4 +1,4 @@
-import type { BenefitRegion, BenefitStatus, Difficulty, IncomeLevel, TargetGroup } from './benefits'
+import type { BenefitRegion, BenefitStatus, DataStatus, Difficulty, IncomeLevel, TargetGroup } from './benefits'
 
 export type HousingType = '행복주택' | '청년매입임대' | '공공임대' | '역세권 청년주택' | '지자체 청년주택'
 export type EnvironmentTag =
@@ -70,6 +70,10 @@ export type HousingOption = {
   officialUrl: string
   sourceName: string
   updatedAt: string
+  dataStatus: DataStatus
+  noticeStatus: string
+  isYouthTargeted: boolean
+  connectedBenefits: string[]
   supportTypes: HousingType[]
   monthlyRentNumber: number
   depositNumber: number
@@ -108,6 +112,10 @@ export const housingOptions: HousingOption[] = [
     officialUrl: 'https://apply.lh.or.kr',
     sourceName: 'LH',
     updatedAt: '2026.06.14',
+    dataStatus: '샘플',
+    noticeStatus: '샘플 위치입니다. 공고별 조건이 다를 수 있으니 반드시 공식 공고문을 확인하세요.',
+    isYouthTargeted: true,
+    connectedBenefits: ['lh-youth-purchase-rental', 'seoul-youth-monthly-rent'],
     supportTypes: ['청년매입임대'],
     monthlyRentNumber: 18,
     depositNumber: 1200,
@@ -160,6 +168,10 @@ export const housingOptions: HousingOption[] = [
     officialUrl: 'https://www.i-sh.co.kr',
     sourceName: '서울주택도시공사',
     updatedAt: '2026.06.14',
+    dataStatus: '샘플',
+    noticeStatus: '샘플 위치입니다. 공고별 조건이 다를 수 있으니 반드시 공식 공고문을 확인하세요.',
+    isYouthTargeted: true,
+    connectedBenefits: ['seoul-youth-safe-housing', 'seoul-youth-deposit-interest', 'seoul-youth-monthly-rent'],
     supportTypes: ['역세권 청년주택'],
     monthlyRentNumber: 36,
     depositNumber: 2500,
@@ -212,6 +224,10 @@ export const housingOptions: HousingOption[] = [
     officialUrl: 'https://apply.lh.or.kr',
     sourceName: 'LH',
     updatedAt: '2026.06.14',
+    dataStatus: '샘플',
+    noticeStatus: '샘플 위치입니다. 공고별 조건이 다를 수 있으니 반드시 공식 공고문을 확인하세요.',
+    isYouthTargeted: true,
+    connectedBenefits: ['happy-housing'],
     supportTypes: ['행복주택'],
     monthlyRentNumber: 24,
     depositNumber: 1800,
@@ -264,6 +280,10 @@ export const housingOptions: HousingOption[] = [
     officialUrl: 'https://www.ih.co.kr',
     sourceName: '인천도시공사',
     updatedAt: '2026.06.14',
+    dataStatus: '샘플',
+    noticeStatus: '샘플 위치입니다. 공고별 조건이 다를 수 있으니 반드시 공식 공고문을 확인하세요.',
+    isYouthTargeted: true,
+    connectedBenefits: ['seoul-youth-monthly-rent'],
     supportTypes: ['공공임대'],
     monthlyRentNumber: 16,
     depositNumber: 900,
@@ -316,6 +336,10 @@ export const housingOptions: HousingOption[] = [
     officialUrl: 'https://www.busan.go.kr',
     sourceName: '부산광역시',
     updatedAt: '2026.06.14',
+    dataStatus: '샘플',
+    noticeStatus: '샘플 위치입니다. 공고별 조건이 다를 수 있으니 반드시 공식 공고문을 확인하세요.',
+    isYouthTargeted: true,
+    connectedBenefits: [],
     supportTypes: ['지자체 청년주택'],
     monthlyRentNumber: 22,
     depositNumber: 1500,
@@ -368,6 +392,10 @@ export const housingOptions: HousingOption[] = [
     officialUrl: 'https://apply.lh.or.kr',
     sourceName: 'LH',
     updatedAt: '2026.06.14',
+    dataStatus: '샘플',
+    noticeStatus: '샘플 위치입니다. 공고별 조건이 다를 수 있으니 반드시 공식 공고문을 확인하세요.',
+    isYouthTargeted: true,
+    connectedBenefits: ['lh-youth-purchase-rental', 'seoul-youth-monthly-rent'],
     supportTypes: ['청년매입임대'],
     monthlyRentNumber: 17,
     depositNumber: 1000,

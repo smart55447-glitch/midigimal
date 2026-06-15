@@ -67,7 +67,7 @@ type Condition = {
 const regions: Array<'전체' | BenefitRegion> = ['전체', '서울', '경기', '인천', '부산', '기타', '전국']
 const housingTypes: Array<'전체' | HousingType> = ['전체', '행복주택', '청년매입임대', '공공임대', '역세권 청년주택', '지자체 청년주택']
 const statuses: Array<'전체' | BenefitStatus> = ['전체', '모집중', '예정', '마감']
-const targets: Array<'전체' | TargetGroup> = ['전체', '대학생', '구직자', '직장인', '프리랜서']
+const targets: Array<'전체' | TargetGroup> = ['전체', '청년', '대학생', '구직자', '직장인', '프리랜서', '전세사기 피해자']
 const incomeLevels: IncomeLevel[] = ['낮음', '중간', '확인 필요']
 const preferences: SupportPreference[] = ['월세 지원', '전세 대출', '공공임대', '아직 모르겠음']
 const environmentPreferences: EnvironmentPreference[] = ['역세권', '대학교 통학권', '직장/도심 접근성', '도서관 근처', '공원/산책로 근처', '병원·약국 근처', '마트·편의점 근처', '공공시설 근처', '안전 인프라 확인']
@@ -180,12 +180,8 @@ function markerIcon(type: HousingType, selected: boolean) {
 
 function connectedBenefits(option: HousingOption) {
   return benefits
-    .slice(0, 5)
     .map((benefit) => {
-      if (option.type === '행복주택' && benefit.id === 'happy-housing') return { benefit, label: '신청 가능' }
-      if (option.type === '청년매입임대' && benefit.id === 'lh-youth-purchase-rental') return { benefit, label: '신청 가능' }
-      if (option.monthlyRent <= 60 && benefit.id === 'seoul-youth-monthly-rent') return { benefit, label: '조건 확인 필요' }
-      if (option.deposit >= 1500 && benefit.id === 'seoul-youth-deposit-interest') return { benefit, label: '확인 필요' }
+      if (option.connectedBenefits.includes(benefit.id)) return { benefit, label: benefit.dataStatus === '공식 확인' ? '공식 확인' : '공고 확인 필요' }
       return { benefit, label: '해당 낮음' }
     })
     .filter((item) => item.label !== '해당 낮음')
@@ -625,9 +621,11 @@ function HomePage({ openPage, toggleCompare }: { openPage: (page: Page) => void;
           {benefits.slice(0, 3).map((benefit) => (
             <article className="feature-card" key={benefit.id}>
               <span>{benefit.status}</span>
+              <span className="data-status">{benefit.dataStatus}</span>
               <h3>{benefit.title}</h3>
               <p>{benefit.summary}</p>
               <small>출처: {benefit.sourceName} · 마지막 확인일: {benefit.updatedAt}</small>
+              <small>{benefit.noticeStatus}</small>
               <button onClick={() => toggleCompare('benefit', benefit.id)} type="button">비교함에 담기</button>
             </article>
           ))}
@@ -933,10 +931,13 @@ function HousingBottomSheet({
         <div className="sheet-panel basic">
           <div className="sheet-summary">
             <span className={`status status-${option.status}`}>{option.status}</span>
+            <span className="data-status">{option.dataStatus}</span>
             <h2>{option.name}</h2>
             <p>{option.address}</p>
             <strong>{option.nearestStation} 도보 {option.walkingMinutesToStation}분</strong>
             <small>{option.summary}</small>
+            <small>출처: {option.sourceName} · 마지막 확인일: {option.updatedAt}</small>
+            <small>{option.noticeStatus}</small>
           </div>
           <div className="sheet-condition-grid">
             <dl>
@@ -946,6 +947,7 @@ function HousingBottomSheet({
               <div><dt>일정</dt><dd>{scheduleText(option)}</dd></div>
               <div><dt>추천 대상</dt><dd>{option.bestFor}</dd></div>
               <div><dt>난이도</dt><dd>{option.difficulty}</dd></div>
+              <div><dt>데이터 상태</dt><dd>{option.dataStatus}</dd></div>
             </dl>
           </div>
           <div className="sheet-side">
@@ -978,6 +980,8 @@ function HousingBottomSheet({
               <div><dt>월 임대료</dt><dd>{money(option.monthlyRent)}</dd></div>
               <div><dt>나이 조건</dt><dd>만 {option.ageMin}~{option.ageMax}세</dd></div>
               <div><dt>무주택 조건</dt><dd>{option.requiresNoHome ? '필요' : '공고별 확인'}</dd></div>
+              <div><dt>공식 출처</dt><dd>{option.sourceName}</dd></div>
+              <div><dt>마지막 확인일</dt><dd>{option.updatedAt}</dd></div>
             </dl>
           </div>
           <section className="sheet-benefits">
@@ -1046,6 +1050,7 @@ function BenefitsPage({ isCompared, setSelectedBenefit, toggleCompare }: {
         {benefits.map((benefit) => (
           <article className="benefit-card" key={benefit.id}>
             <span className={`status status-${benefit.status}`}>{benefit.status}</span>
+            <span className="data-status">{benefit.dataStatus}</span>
             <h2>{benefit.title}</h2>
             <p>{benefit.summary}</p>
             <dl>
@@ -1058,6 +1063,7 @@ function BenefitsPage({ isCompared, setSelectedBenefit, toggleCompare }: {
               <div><dt>출처</dt><dd>{benefit.sourceName}</dd></div>
               <div><dt>마지막 확인일</dt><dd>{benefit.updatedAt}</dd></div>
             </dl>
+            <small>{benefit.noticeStatus}</small>
             <a href={benefit.officialUrl} rel="noreferrer" target="_blank">공식 링크: {benefit.sourceName}</a>
             <div className="button-row">
               <button className={isCompared('benefit', benefit.id) ? 'selected' : ''} onClick={() => toggleCompare('benefit', benefit.id)} type="button">
@@ -1077,6 +1083,72 @@ function recommendationReason(condition: Condition, title: string) {
   const locationText = [condition.region, condition.sigungu !== '전체' ? condition.sigungu : null, condition.stationOrLandmark !== '전체' ? `${condition.stationOrLandmark} 근처` : null].filter(Boolean).join(' ')
   const envText = condition.environmentPreferences.length ? ` ${condition.environmentPreferences.slice(0, 2).join(', ')} 조건도 함께 봅니다.` : ''
   return `추천 이유: ${locationText} · 만 ${condition.age}세 · ${homeText}을 기준으로 ${title}을 먼저 확인할 필요가 있어요.${envText}`
+}
+
+function officialBenefitRecommendations(condition: Condition) {
+  const entries: Array<{ id: string; reason: string; priority: number }> = []
+  const isSeoul = condition.region === '서울' || condition.region === '서울 성북구' || condition.sigungu !== '전체'
+  const isSeongbuk = condition.sigungu === '성북구' || condition.region === '서울 성북구'
+
+  if (isSeoul && condition.independencePriorities.includes('월세 부담 줄이기')) {
+    entries.push({
+      id: 'seoul-youth-monthly-rent',
+      priority: 100,
+      reason: '서울 거주 청년이고 월세 부담 줄이기를 선택했기 때문에 청년월세지원을 우선 확인하도록 추천했어요.',
+    })
+  }
+
+  if (isSeoul && condition.independencePriorities.includes('보증금 부담 줄이기')) {
+    entries.push({
+      id: 'seoul-youth-deposit-interest',
+      priority: 95,
+      reason: '서울 거주 청년이고 보증금 부담 줄이기를 선택했기 때문에 청년 임차보증금 이자지원을 함께 확인하도록 추천했어요.',
+    })
+  }
+
+  if (isSeoul && (condition.preference === '공공임대' || condition.type === '청년매입임대')) {
+    entries.push({
+      id: 'lh-youth-purchase-rental',
+      priority: 90,
+      reason: '서울 지역에서 공공임대나 매입임대 관심 조건이 있어 LH 청년매입임대 공고를 확인하도록 추천했어요.',
+    })
+  }
+
+  if (isSeoul && (condition.preference === '공공임대' || condition.type === '행복주택' || condition.independencePriorities.includes('공공임대 먼저 보기'))) {
+    entries.push({
+      id: 'happy-housing',
+      priority: 88,
+      reason: '공공임대 관심 조건이 있어 행복주택 모집 시기와 자격 기준을 함께 확인하도록 추천했어요.',
+    })
+  }
+
+  if (isSeongbuk && condition.independencePriorities.length > 0) {
+    entries.push({
+      id: 'seongbuk-youth-housing-counseling',
+      priority: 86,
+      reason: '성북구를 선택했고 첫 독립 준비 조건이 있어 성북 청년 주거상담/교육을 함께 확인하도록 추천했어요.',
+    })
+  }
+
+  if (isSeongbuk && condition.targetGroup === '전세사기 피해자') {
+    entries.push({
+      id: 'seongbuk-jeonse-fraud-support',
+      priority: 120,
+      reason: '성북구를 선택했고 전세사기 피해 상황을 선택했기 때문에 성북구 전세사기 피해자 지원을 우선 안내해요.',
+    })
+  }
+
+  const unique = new Map<string, { item: Benefit; label: string; reason: string; priority: number }>()
+  entries.forEach((entry) => {
+    const benefit = benefits.find((item) => item.id === entry.id)
+    if (!benefit) return
+    const previous = unique.get(entry.id)
+    if (!previous || entry.priority > previous.priority) {
+      unique.set(entry.id, { item: benefit, label: benefit.dataStatus, reason: entry.reason, priority: entry.priority })
+    }
+  })
+
+  return Array.from(unique.values()).sort((a, b) => b.priority - a.priority)
 }
 
 function ContractChecklist({ items }: { items: string[] }) {
@@ -1203,10 +1275,20 @@ function RecommendPage({ condition, setCondition, setPage, setSelectedHousingId,
 
   const connectedRecommendedBenefits = useMemo(() => {
     if (!submittedCondition) return []
+    const official = officialBenefitRecommendations(submittedCondition)
     const linked = recommendedHousing.flatMap(({ item }) => connectedBenefits(item).map(({ benefit, label }) => ({ item: benefit, label })))
-    const unique = new Map<string, { item: Benefit; label: string }>()
+    const unique = new Map<string, { item: Benefit; label: string; reason: string }>()
+    official.forEach((entry) => {
+      unique.set(entry.item.id, { item: entry.item, label: entry.label, reason: entry.reason })
+    })
     linked.forEach((entry) => {
-      if (!unique.has(entry.item.id)) unique.set(entry.item.id, entry)
+      if (!unique.has(entry.item.id)) {
+        unique.set(entry.item.id, {
+          item: entry.item,
+          label: entry.label,
+          reason: '추천 주거 옵션과 연결 가능한 지원사업입니다. 공고별 조건을 공식 페이지에서 확인하세요.',
+        })
+      }
     })
     return Array.from(unique.values()).slice(0, 3)
   }, [recommendedHousing, submittedCondition])
@@ -1339,22 +1421,27 @@ function RecommendPage({ condition, setCondition, setPage, setSelectedHousingId,
               )}
               {recommendedHousing.map(({ item }, index) => (
                 <article className="mini-card" key={item.id}>
-                  <span>추천 {index + 1}순위</span>
+                  <span>추천 {index + 1}순위 · {item.dataStatus}</span>
                   <h3>{item.name}</h3>
                   <p>{item.nearestStation} 도보 {item.walkingMinutesToStation}분 · 월 {money(item.monthlyRent)}</p>
                   <small>{recommendationReason(submittedCondition, item.name)}</small>
+                  <small>출처: {item.sourceName} · 마지막 확인일: {item.updatedAt}</small>
+                  <small>{item.noticeStatus}</small>
                   <button onClick={() => { setSelectedHousingId(item.id); setPage('map') }} type="button">지도에서 주변환경 확인하기</button>
                 </article>
               ))}
             </section>
             <section>
               <h2>이 주거 옵션과 연결 가능한 지원사업</h2>
-              {connectedRecommendedBenefits.map(({ item, label }, index) => (
+              {connectedRecommendedBenefits.map(({ item, label, reason }) => (
                 <article className="mini-card" key={item.id}>
                   <span>{label}</span>
                   <h3>{item.title}</h3>
                   <p>{item.summary}</p>
-                  <small>{index === 0 ? '추천 주거 옵션과 함께 확인할 지원사업입니다.' : recommendationReason(submittedCondition, item.title)}</small>
+                  <small>{reason}</small>
+                  <small>출처: {item.sourceName} · 마지막 확인일: {item.updatedAt}</small>
+                  <small>{item.noticeStatus}</small>
+                  <a href={item.officialUrl} rel="noreferrer" target="_blank">공식 링크 보기</a>
                   <button onClick={() => toggleCompare('benefit', item.id)} type="button">비교함에 담기</button>
                 </article>
               ))}
@@ -1401,6 +1488,11 @@ function CompareHousingTable({ items }: { items: HousingOption[] }) {
     ['월 임대료', (item: HousingOption) => money(item.monthlyRent)],
     ['모집 상태', (item: HousingOption) => item.status],
     ['추천 대상', (item: HousingOption) => item.bestFor],
+    ['데이터 상태', (item: HousingOption) => item.dataStatus],
+    ['공식 출처', (item: HousingOption) => item.sourceName],
+    ['마지막 확인일', (item: HousingOption) => item.updatedAt],
+    ['공식 링크', (item: HousingOption) => item.officialUrl],
+    ['안내 문구', (item: HousingOption) => item.noticeStatus],
   ] as const
 
   return (
@@ -1423,6 +1515,11 @@ function CompareBenefitTable({ items }: { items: Benefit[] }) {
     ['난이도', (item: Benefit) => item.difficulty],
     ['모집 상태', (item: Benefit) => item.status],
     ['중복 가능', (item: Benefit) => item.canCombineWith.length ? item.canCombineWith.join(', ') : '공고별 확인'],
+    ['데이터 상태', (item: Benefit) => item.dataStatus],
+    ['공식 출처', (item: Benefit) => item.sourceName],
+    ['마지막 확인일', (item: Benefit) => item.updatedAt],
+    ['공식 링크', (item: Benefit) => item.officialUrl],
+    ['안내 문구', (item: Benefit) => item.noticeStatus],
   ] as const
 
   return (

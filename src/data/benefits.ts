@@ -27,6 +27,7 @@ export type TargetGroup =
 export type BenefitStatus = '모집중' | '예정' | '마감'
 export type Difficulty = '낮음' | '보통' | '높음'
 export type SupportPreference = '월세 지원' | '전세 대출' | '공공임대' | '아직 모르겠음'
+export type DataStatus = '공식 확인' | '공고 확인 필요' | '샘플'
 
 export type Benefit = {
   id: string
@@ -52,6 +53,8 @@ export type Benefit = {
   officialUrl: string
   updatedAt: string
   sourceName: string
+  dataStatus: DataStatus
+  noticeStatus: string
 }
 
 const updatedAt = '2026.06.15'
@@ -87,6 +90,8 @@ export const benefits: Benefit[] = [
     officialUrl: 'https://housing.seoul.go.kr/site/main/content/sh01_060513',
     updatedAt,
     sourceName: '서울주거포털',
+    dataStatus: '공식 확인',
+    noticeStatus: '공고별 조건이 다를 수 있으니 반드시 공식 공고문을 확인하세요.',
   },
   {
     id: 'seoul-youth-deposit-interest',
@@ -116,6 +121,8 @@ export const benefits: Benefit[] = [
     officialUrl: 'https://housing.seoul.go.kr/site/main/content/sh01_040901',
     updatedAt,
     sourceName: '서울주거포털',
+    dataStatus: '공식 확인',
+    noticeStatus: '공고별 조건이 다를 수 있으니 반드시 공식 공고문을 확인하세요.',
   },
   {
     id: 'lh-youth-purchase-rental',
@@ -145,6 +152,8 @@ export const benefits: Benefit[] = [
     officialUrl: 'https://apply.lh.or.kr/',
     updatedAt,
     sourceName: 'LH청약플러스',
+    dataStatus: '공고 확인 필요',
+    noticeStatus: '공고별 조건이 다를 수 있으니 반드시 공식 공고문을 확인하세요.',
   },
   {
     id: 'seoul-youth-safe-housing',
@@ -174,6 +183,8 @@ export const benefits: Benefit[] = [
     officialUrl: 'https://housing.seoul.go.kr/site/main/content/sh01_060508',
     updatedAt,
     sourceName: '서울주거포털 / 청년안심주택',
+    dataStatus: '공식 확인',
+    noticeStatus: '공고별 조건이 다를 수 있으니 반드시 공식 공고문을 확인하세요.',
   },
   {
     id: 'happy-housing',
@@ -203,6 +214,8 @@ export const benefits: Benefit[] = [
     officialUrl: 'https://housing.seoul.go.kr/site/main/content/sh01_060503',
     updatedAt,
     sourceName: '서울주거포털 / LH청약플러스',
+    dataStatus: '공식 확인',
+    noticeStatus: '공고별 조건이 다를 수 있으니 반드시 공식 공고문을 확인하세요.',
   },
   {
     id: 'seongbuk-youth-housing-counseling',
@@ -228,6 +241,8 @@ export const benefits: Benefit[] = [
     officialUrl: 'https://youth.seoul.go.kr/',
     updatedAt,
     sourceName: '청년몽땅정보통 / 서울청년센터 성북',
+    dataStatus: '공고 확인 필요',
+    noticeStatus: '공고별 조건이 다를 수 있으니 반드시 공식 공고문을 확인하세요.',
   },
   {
     id: 'seongbuk-jeonse-fraud-support',
@@ -258,5 +273,7 @@ export const benefits: Benefit[] = [
     officialUrl: 'https://www.seongbuk.go.kr/',
     updatedAt,
     sourceName: '성북구청',
+    dataStatus: '공고 확인 필요',
+    noticeStatus: '공고별 조건이 다를 수 있으니 반드시 공식 공고문을 확인하세요.',
   },
 ]
