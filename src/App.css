@@ -534,6 +534,7 @@ dd {
   border-bottom: 1px solid #e5ebf2;
   display: grid;
   gap: 10px;
+  max-width: 100%;
   padding: 10px clamp(14px, 3vw, 28px);
   position: relative;
   z-index: 690;
@@ -560,8 +561,11 @@ dd {
 
 .filter-chip-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  overflow-x: auto;
+  max-height: 96px;
+  max-width: 100%;
+  overflow-y: auto;
   padding-bottom: 2px;
 }
 
@@ -579,6 +583,7 @@ dd {
   min-height: 32px;
   padding: 0 10px;
   white-space: nowrap;
+  word-break: keep-all;
 }
 
 .filter-chip-row button span {
@@ -1210,17 +1215,15 @@ dd {
 }
 
 .recommend-empty {
-  align-content: center;
   background: #ffffff;
   border: 1px dashed #b9c8da;
   border-radius: 16px;
   color: #647286;
   display: grid;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 400;
-  line-height: 1.7;
-  min-height: 320px;
-  padding: 32px;
+  line-height: 1.6;
+  padding: 22px;
   text-align: center;
 }
 
@@ -1357,9 +1360,46 @@ dd {
 }
 
 .compare-empty {
+  background: #ffffff;
+  border: 1px solid #d8e1ec;
+  border-radius: 18px;
+  box-shadow: 0 16px 36px rgba(20, 35, 54, 0.08);
   display: grid;
-  gap: 16px;
+  gap: 18px;
   justify-items: center;
+  padding: 32px;
+}
+
+.compare-empty p {
+  color: #4c5f76;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.65;
+  max-width: 520px;
+}
+
+.compare-empty .button-row {
+  justify-content: center;
+  margin-top: 0;
+}
+
+.compare-empty .button-row button {
+  border: 0;
+  border-radius: 8px;
+  font-weight: 600;
+  min-height: 44px;
+  padding: 0 16px;
+  white-space: nowrap;
+}
+
+.compare-empty .button-row button:first-child {
+  background: #2f62e6;
+  color: #ffffff;
+}
+
+.compare-empty .button-row button + button {
+  background: #eef4ff;
+  color: #244eb8;
 }
 
 .secondary-compare {
@@ -1419,6 +1459,12 @@ thead th > button {
   font-weight: 400;
   padding: 28px;
   text-align: center;
+}
+
+.empty-state.compare-empty {
+  border: 1px solid #d8e1ec;
+  border-radius: 18px;
+  padding: 32px;
 }
 
 .table-wrap {

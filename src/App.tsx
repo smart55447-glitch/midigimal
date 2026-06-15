@@ -1353,7 +1353,6 @@ function RecommendPage({ addHousingCompare, condition, isCompared, setCondition,
   const sigunguOptions = optionsForLocation('sigungu', condition.region)
   const dongOptions = optionsForLocation('dong', condition.region, condition.sigungu)
   const stationOptions = optionsForLocation('station', condition.region, condition.sigungu, condition.dong)
-  const activeConditionChips = conditionChips(condition)
   const submittedConditionChips = submittedCondition ? conditionChips(submittedCondition) : []
 
   return (
@@ -1372,20 +1371,6 @@ function RecommendPage({ addHousingCompare, condition, isCompared, setCondition,
         <label>월 임대료 {condition.maxRent}만원 이하<input max="60" min="10" onChange={(event) => updateCondition({ ...condition, maxRent: Number(event.target.value) })} type="range" value={condition.maxRent} /></label>
         <label>보증금 {condition.maxDeposit}만원 이하<input max="5000" min="500" step="100" onChange={(event) => updateCondition({ ...condition, maxDeposit: Number(event.target.value) })} type="range" value={condition.maxDeposit} /></label>
         <label className="checkline"><input checked={condition.noHome} onChange={(event) => updateCondition({ ...condition, noHome: event.target.checked })} type="checkbox" />무주택자입니다</label>
-        <div className="selected-filter-panel recommend-chip-panel">
-          <div>
-            <strong>선택한 조건 {activeConditionChips.length}개</strong>
-            <span>조건을 더할수록 추천 주거 옵션이 좁혀져요.</span>
-          </div>
-          <div className="filter-chip-row" aria-label="선택한 추천 조건">
-            {activeConditionChips.map((chip) => (
-              <button key={chip.key} onClick={() => updateCondition(removeConditionChip(condition, chip.key))} type="button">
-                {chip.label} <span>×</span>
-              </button>
-            ))}
-            <button className="reset-chip" onClick={resetCondition} type="button">전체 초기화</button>
-          </div>
-        </div>
         <div className="condition-group">
           <strong>중요하게 보는 생활환경</strong>
           <div className="condition-check-grid">
