@@ -1418,6 +1418,54 @@ dd {
   color: #244eb8;
 }
 
+.compare-recommendation {
+  background: #eef8f6;
+  border: 1px solid #cce8e1;
+  border-radius: 16px;
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+}
+
+.compare-recommendation > span {
+  color: #14756a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.compare-recommendation strong {
+  color: #172235;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.compare-recommendation div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.compare-recommendation em,
+.compare-value-badge {
+  background: #ffffff;
+  border: 1px solid #bfe4dc;
+  border-radius: 999px;
+  color: #14756a;
+  display: inline-flex;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1;
+  margin-left: 6px;
+  padding: 6px 8px;
+  white-space: nowrap;
+}
+
+.compare-recommendation em {
+  margin-left: 0;
+}
+
 .secondary-compare {
   display: grid;
   gap: 16px;

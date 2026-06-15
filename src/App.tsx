@@ -472,11 +472,6 @@ function App() {
     })
   }, [favoriteHousingIds, mapFilter])
 
-  const comparedBenefits = compareItems
-    .filter((item) => item.kind === 'benefit')
-    .map((item) => benefits.find((benefit) => benefit.id === item.id))
-    .filter((item): item is Benefit => Boolean(item))
-
   const comparedHousing = compareItems
     .filter((item) => item.kind === 'housing')
     .map((item) => housingOptions.find((housing) => housing.id === item.id))
@@ -485,18 +480,6 @@ function App() {
   const openPage = (nextPage: Page) => {
     setPage(nextPage)
     window.setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0)
-  }
-
-  const toggleCompare = (kind: CompareItem['kind'], id: string) => {
-    setCompareItems((current) => {
-      const exists = current.some((item) => item.kind === kind && item.id === id)
-      if (exists) return current.filter((item) => !(item.kind === kind && item.id === id))
-      if (kind === 'housing' && current.filter((item) => item.kind === 'housing').length >= 4) {
-        window.alert('최대 4개까지 비교할 수 있어요.')
-        return current
-      }
-      return [...current, { kind, id }]
-    })
   }
 
   const addHousingCompare = (id: string) => {
@@ -530,8 +513,8 @@ function App() {
   return (
     <main className="app-shell">
       <Header compareCount={comparedHousing.length} openPage={openPage} page={page} />
-      {page === 'home' && <HomePage openPage={openPage} toggleCompare={toggleCompare} />}
-      {page === 'benefits' && <BenefitsPage isCompared={isCompared} setSelectedBenefit={setSelectedBenefit} toggleCompare={toggleCompare} />}
+      {page === 'home' && <HomePage openPage={openPage} />}
+      {page === 'benefits' && <BenefitsPage setSelectedBenefit={setSelectedBenefit} />}
       {page === 'map' && (
         <MapPage
           favoriteHousingIds={favoriteHousingIds}
@@ -558,12 +541,11 @@ function App() {
           setSelectedHousingId={selectHousing}
           isCompared={isCompared}
           addHousingCompare={addHousingCompare}
-          toggleCompare={toggleCompare}
         />
       )}
       {page === 'compare' && (
         <ComparePage
-          comparedBenefits={comparedBenefits}
+          condition={condition}
           comparedHousing={comparedHousing}
           compareItems={compareItems}
           openPage={openPage}
@@ -599,7 +581,7 @@ function Header({ compareCount, openPage, page }: { compareCount: number; openPa
   )
 }
 
-function HomePage({ openPage, toggleCompare }: { openPage: (page: Page) => void; toggleCompare: (kind: CompareItem['kind'], id: string) => void }) {
+function HomePage({ openPage }: { openPage: (page: Page) => void }) {
   return (
     <>
       <section className="landing-hero" style={{ backgroundImage: `linear-gradient(90deg, rgba(20, 31, 48, 0.72), rgba(20, 31, 48, 0.1)), url(${heroImage})` }}>
@@ -653,7 +635,6 @@ function HomePage({ openPage, toggleCompare }: { openPage: (page: Page) => void;
               <p>{benefit.summary}</p>
               <small>출처: {benefit.sourceName} · 마지막 확인일: {benefit.updatedAt}</small>
               <small>{benefit.noticeStatus}</small>
-              <button onClick={() => toggleCompare('benefit', benefit.id)} type="button">지원사업 비교에 담기</button>
             </article>
           ))}
         </div>
@@ -1062,10 +1043,8 @@ function HousingBottomSheet({
   )
 }
 
-function BenefitsPage({ isCompared, setSelectedBenefit, toggleCompare }: {
-  isCompared: (kind: CompareItem['kind'], id: string) => boolean
+function BenefitsPage({ setSelectedBenefit }: {
   setSelectedBenefit: (benefit: Benefit) => void
-  toggleCompare: (kind: CompareItem['kind'], id: string) => void
 }) {
   return (
     <section className="content-page">
@@ -1093,9 +1072,6 @@ function BenefitsPage({ isCompared, setSelectedBenefit, toggleCompare }: {
             <small>{benefit.noticeStatus}</small>
             <a href={benefit.officialUrl} rel="noreferrer" target="_blank">공식 링크: {benefit.sourceName}</a>
             <div className="button-row">
-              <button className={isCompared('benefit', benefit.id) ? 'selected' : ''} onClick={() => toggleCompare('benefit', benefit.id)} type="button">
-                {isCompared('benefit', benefit.id) ? '지원사업 비교에서 빼기' : '지원사업 비교에 담기'}
-              </button>
               <button onClick={() => setSelectedBenefit(benefit)} type="button">상세보기</button>
             </div>
           </article>
@@ -1267,14 +1243,13 @@ function ContractChecklist({ items }: { items: string[] }) {
   )
 }
 
-function RecommendPage({ addHousingCompare, condition, isCompared, setCondition, setPage, setSelectedHousingId, toggleCompare }: {
+function RecommendPage({ addHousingCompare, condition, isCompared, setCondition, setPage, setSelectedHousingId }: {
   addHousingCompare: (id: string) => void
   condition: Condition
   isCompared: (kind: CompareItem['kind'], id: string) => boolean
   setCondition: (condition: Condition) => void
   setPage: (page: Page) => void
   setSelectedHousingId: (id: string) => void
-  toggleCompare: (kind: CompareItem['kind'], id: string) => void
 }) {
   const [submittedCondition, setSubmittedCondition] = useState<Condition | null>(null)
   const [isDirty, setIsDirty] = useState(false)
@@ -1461,7 +1436,6 @@ function RecommendPage({ addHousingCompare, condition, isCompared, setCondition,
                   <small>출처: {item.sourceName} · 마지막 확인일: {item.updatedAt}</small>
                   <small>{item.noticeStatus}</small>
                   <a href={item.officialUrl} rel="noreferrer" target="_blank">공식 링크 보기</a>
-                  <button onClick={() => toggleCompare('benefit', item.id)} type="button">지원사업 비교에 담기</button>
                 </article>
               ))}
             </section>
@@ -1473,15 +1447,15 @@ function RecommendPage({ addHousingCompare, condition, isCompared, setCondition,
   )
 }
 
-function ComparePage({ comparedBenefits, comparedHousing, compareItems, openPage, setCompareItems }: {
-  comparedBenefits: Benefit[]
+function ComparePage({ condition, comparedHousing, compareItems, openPage, setCompareItems }: {
+  condition: Condition
   comparedHousing: HousingOption[]
   compareItems: CompareItem[]
   openPage: (page: Page) => void
   setCompareItems: (items: CompareItem[]) => void
 }) {
-  const removeCompareItem = (kind: CompareItem['kind'], id: string) => {
-    setCompareItems(compareItems.filter((item) => !(item.kind === kind && item.id === id)))
+  const removeCompareItem = (id: string) => {
+    setCompareItems(compareItems.filter((item) => !(item.kind === 'housing' && item.id === id)))
   }
   const clearHousingItems = () => {
     setCompareItems(compareItems.filter((item) => item.kind !== 'housing'))
@@ -1505,65 +1479,61 @@ function ComparePage({ comparedBenefits, comparedHousing, compareItems, openPage
           </div>
         </div>
       )}
-      {comparedHousing.length > 0 && <CompareHousingTable items={comparedHousing} onRemove={(id) => removeCompareItem('housing', id)} />}
-      {comparedBenefits.length > 0 && (
-        <section className="secondary-compare">
-          <div className="section-copy">
-            <p>OPTIONAL</p>
-            <h2>지원사업 비교</h2>
-            <span>지원사업 카드는 보조 정보로만 비교합니다. 집 선택은 위의 주거 옵션 비교표를 기준으로 확인하세요.</span>
-          </div>
-          <CompareBenefitTable items={comparedBenefits} onRemove={(id) => removeCompareItem('benefit', id)} />
-        </section>
-      )}
+      {comparedHousing.length > 0 && <CompareRecommendationSummary condition={condition} items={comparedHousing} />}
+      {comparedHousing.length > 0 && <CompareHousingTable condition={condition} items={comparedHousing} onRemove={removeCompareItem} />}
     </section>
   )
 }
 
-function CompareHousingTable({ items, onRemove }: { items: HousingOption[]; onRemove: (id: string) => void }) {
-  const hasTag = (item: HousingOption, tag: EnvironmentTag) => item.environmentTags.includes(tag) ? '해당' : '확인 필요'
+function CompareRecommendationSummary({ condition, items }: { condition: Condition; items: HousingOption[] }) {
+  const ranked = [...items]
+    .map((item) => ({ item, score: scoreHousing(condition, item) }))
+    .sort((a, b) => b.score - a.score)
+  const best = ranked[0]?.item
+  if (!best) return null
+
+  const reasons = [
+    locationMatches(best, condition.region, condition.sigungu, condition.dong, condition.stationOrLandmark) ? '선택한 지역과 일치해요' : null,
+    best.walkingMinutesToStation <= 10 ? '역세권 조건에 가까워요' : null,
+    best.monthlyRentNumber <= Math.min(condition.maxRent, 30) ? '월세 부담이 낮은 편이에요' : null,
+    connectedBenefits(best).length > 0 ? '연결 가능한 지원사업이 있어요' : null,
+    condition.environmentPreferences.some((tag) => best.environmentTags.includes(tag)) ? '선택한 생활환경 조건과 겹쳐요' : null,
+  ].filter(Boolean)
+
+  return (
+    <section className="compare-recommendation">
+      <span>내 조건 기준 추천</span>
+      <strong>스크랩한 주거 옵션 중 {best.name}가 선택한 조건에 가장 가까워요.</strong>
+      <div>
+        {reasons.slice(0, 4).map((reason) => <em key={reason}>{reason}</em>)}
+      </div>
+    </section>
+  )
+}
+
+function CompareHousingTable({ condition, items, onRemove }: { condition: Condition; items: HousingOption[]; onRemove: (id: string) => void }) {
+  const lowestRent = Math.min(...items.map((item) => item.monthlyRentNumber))
+  const lowestDeposit = Math.min(...items.map((item) => item.depositNumber))
+  const shortestWalk = Math.min(...items.map((item) => item.walkingMinutesToStation))
+  const tagMatchCount = (item: HousingOption) => condition.environmentPreferences.filter((tag) => item.environmentTags.includes(tag)).length
+  const bestTagMatch = Math.max(...items.map(tagMatchCount))
+  const Badge = ({ children }: { children: ReactNode }) => <span className="compare-value-badge">{children}</span>
+  const withBadge = (value: ReactNode, show: boolean, label: string) => <>{value}{show && <Badge>{label}</Badge>}</>
   const linkedBenefitText = (item: HousingOption) => connectedBenefits(item).map(({ benefit, label }) => `${benefit.title} (${label})`).join(', ') || '공식 공고 확인 필요'
-  const burdenText = (value: number, low: number, high: number) => {
-    if (value <= low) return '낮음'
-    if (value <= high) return '보통'
-    return '높음'
-  }
   const rows: Array<{ group: string; label: string; get: (item: HousingOption) => ReactNode }> = [
     { group: '기본 정보', label: '주거 옵션명', get: (item) => item.name },
     { group: '기본 정보', label: '지원 유형', get: (item) => item.type },
     { group: '기본 정보', label: '지역/주소', get: (item) => `${item.sido} ${item.sigungu} ${item.dong} · ${item.address}` },
-    { group: '기본 정보', label: '데이터 상태', get: (item) => item.dataStatus },
-    { group: '기본 정보', label: '공식 출처', get: (item) => item.sourceName },
-    { group: '기본 정보', label: '마지막 확인일', get: (item) => item.updatedAt },
-    { group: '비용', label: '보증금', get: (item) => money(item.deposit) },
-    { group: '비용', label: '월 임대료', get: (item) => money(item.monthlyRent) },
-    { group: '비용', label: '관리비 여부', get: () => '공고 확인 필요' },
-    { group: '비용', label: '비용 정보 상태', get: (item) => item.dataStatus },
-    { group: '지원 가능성', label: '연결 가능한 지원사업', get: linkedBenefitText },
-    { group: '지원 가능성', label: '청년 월세지원 확인', get: (item) => item.connectedBenefits.includes('seoul-youth-monthly-rent') ? '조건 확인 필요' : '공고 확인 필요' },
-    { group: '지원 가능성', label: '청년매입임대 해당', get: (item) => item.type === '청년매입임대' ? '해당' : '해당 낮음' },
-    { group: '지원 가능성', label: '행복주택 해당', get: (item) => item.type === '행복주택' ? '해당' : '해당 낮음' },
-    { group: '지원 가능성', label: '청년안심주택 해당', get: (item) => item.type === '역세권 청년주택' ? '확인 필요' : '해당 낮음' },
-    { group: '지원 가능성', label: '버팀목 전세대출 확인', get: (item) => item.deposit >= 1500 ? '확인 필요' : '해당 낮음' },
-    { group: '지원 가능성', label: '무주택 조건 필요', get: (item) => item.requiresNoHome ? '필요' : '공고별 확인' },
-    { group: '지원 가능성', label: '공식 공고 확인', get: (item) => item.noticeStatus },
-    { group: '생활환경', label: '가까운 역', get: (item) => item.nearestStation },
-    { group: '생활환경', label: '역까지 도보 시간', get: (item) => `${item.walkingMinutesToStation}분` },
-    { group: '생활환경', label: '역세권 여부', get: (item) => item.walkingMinutesToStation <= 10 ? '역세권' : '확인 필요' },
-    { group: '생활환경', label: '대학교 통학권', get: (item) => hasTag(item, '대학교 통학권') },
-    { group: '생활환경', label: '도서관 근처', get: (item) => hasTag(item, '도서관 근처') },
-    { group: '생활환경', label: '공원/산책로 근처', get: (item) => hasTag(item, '공원/산책로 근처') },
-    { group: '생활환경', label: '병원·약국 근처', get: (item) => hasTag(item, '병원·약국 근처') },
-    { group: '생활환경', label: '마트·편의점 근처', get: (item) => hasTag(item, '마트·편의점 근처') },
-    { group: '생활환경', label: '공공시설 근처', get: (item) => hasTag(item, '공공시설 근처') },
-    { group: '생활환경', label: '안전 인프라 확인', get: (item) => hasTag(item, '안전 인프라 확인') },
-    { group: '첫 독립 체크', label: '월세 부담 정도', get: (item) => burdenText(item.monthlyRentNumber, 20, 35) },
-    { group: '첫 독립 체크', label: '보증금 부담 정도', get: (item) => burdenText(item.depositNumber, 1200, 2500) },
-    { group: '첫 독립 체크', label: '통학/출근 접근성', get: (item) => item.walkingMinutesToStation <= 10 ? '좋음' : '확인 필요' },
-    { group: '첫 독립 체크', label: '생활편의성', get: (item) => item.environmentTags.includes('마트·편의점 근처') ? '확인됨' : '공고/지도 확인 필요' },
-    { group: '첫 독립 체크', label: '안전 인프라 확인 필요', get: () => 'CCTV/비상벨·안심귀갓길 공식 데이터 확인 필요' },
-    { group: '첫 독립 체크', label: '계약 전 체크 필요 항목', get: () => '등기부등본, 전입신고, 확정일자, 보증금 보호 확인' },
-    { group: '첫 독립 체크', label: '공식 공고', get: (item) => <a href={item.officialUrl} rel="noreferrer" target="_blank">공식 공고 보기</a> },
+    { group: '비용', label: '보증금', get: (item) => withBadge(money(item.deposit), item.depositNumber === lowestDeposit, '유리') },
+    { group: '비용', label: '월 임대료', get: (item) => withBadge(money(item.monthlyRent), item.monthlyRentNumber === lowestRent, '유리') },
+    { group: '교통', label: '가까운 역', get: (item) => item.nearestStation },
+    { group: '교통', label: '역까지 도보 시간', get: (item) => withBadge(`${item.walkingMinutesToStation}분`, item.walkingMinutesToStation === shortestWalk, '조건 일치') },
+    { group: '지원', label: '연결 가능한 지원사업', get: linkedBenefitText },
+    { group: '생활환경', label: '생활환경 태그', get: (item) => withBadge(item.environmentTags.join(', '), tagMatchCount(item) > 0 && tagMatchCount(item) === bestTagMatch, '조건 일치') },
+    { group: '출처', label: '공식 출처', get: (item) => item.sourceName },
+    { group: '출처', label: '데이터 상태', get: (item) => item.dataStatus },
+    { group: '출처', label: '마지막 확인일', get: (item) => item.updatedAt },
+    { group: '출처', label: '공식 공고', get: (item) => <a href={item.officialUrl} rel="noreferrer" target="_blank">공식 공고 보기</a> },
   ]
   let previousGroup = ''
 
@@ -1598,33 +1568,6 @@ function CompareHousingTable({ items, onRemove }: { items: HousingOption[]; onRe
             )
           })}
         </tbody>
-      </table>
-    </div>
-  )
-}
-
-function CompareBenefitTable({ items, onRemove }: { items: Benefit[]; onRemove: (id: string) => void }) {
-  const rows: Array<{ label: string; get: (item: Benefit) => ReactNode }> = [
-    { label: '지원 방식', get: (item) => item.supportType },
-    { label: '지원 금액', get: (item) => item.supportAmount },
-    { label: '대상', get: (item) => item.targetGroups.join(', ') },
-    { label: '신청 조건', get: (item) => item.conditions.join(', ') },
-    { label: '난이도', get: (item) => item.difficulty },
-    { label: '모집 상태', get: (item) => item.status },
-    { label: '중복 가능', get: (item) => item.canCombineWith.length ? item.canCombineWith.join(', ') : '공고별 확인' },
-    { label: '데이터 상태', get: (item) => item.dataStatus },
-    { label: '공식 출처', get: (item) => item.sourceName },
-    { label: '마지막 확인일', get: (item) => item.updatedAt },
-    { label: '공식 링크', get: (item) => <a href={item.officialUrl} rel="noreferrer" target="_blank">공식 링크 보기</a> },
-    { label: '안내 문구', get: (item) => item.noticeStatus },
-  ]
-
-  return (
-    <div className="table-wrap">
-      <h2>지원사업 비교</h2>
-      <table>
-        <thead><tr><th>항목</th>{items.map((item) => <th key={item.id}>{item.title}<button onClick={() => onRemove(item.id)} type="button">삭제</button></th>)}</tr></thead>
-        <tbody>{rows.map((row) => <tr key={row.label}><th>{row.label}</th>{items.map((item) => <td key={item.id}>{row.get(item)}</td>)}</tr>)}</tbody>
       </table>
     </div>
   )
