@@ -1332,7 +1332,12 @@ function RecommendPage({ addHousingCompare, condition, isCompared, setCondition,
 
   return (
     <section className="recommend-page">
-      <aside className="condition-panel">
+      <div className="recommend-page-head">
+        <p>RECOMMEND</p>
+        <h1>내 조건으로 주거 옵션 찾기</h1>
+        <span>지역, 생활환경, 비용, 지원유형을 함께 선택하면 조건에 맞는 주거 옵션과 연결 가능한 지원사업을 추천해드려요.</span>
+      </div>
+      <aside className="condition-panel recommend-filter-panel">
         <h2>내 조건 입력</h2>
         <label>시/도<select value={condition.region} onChange={(event) => updateCondition({ ...condition, region: event.target.value as Condition['region'], sigungu: '전체', dong: '전체', stationOrLandmark: '전체' })}>{regions.map((item) => <option key={item}>{item}</option>)}</select></label>
         <label>시/군/구<select value={condition.sigungu} onChange={(event) => updateCondition({ ...condition, sigungu: event.target.value, dong: '전체', stationOrLandmark: '전체' })}>{sigunguOptions.map((item) => <option key={item}>{item}</option>)}</select></label>
@@ -1375,7 +1380,7 @@ function RecommendPage({ addHousingCompare, condition, isCompared, setCondition,
         </div>
         {isDirty && <p className="dirty-notice">조건이 변경되었어요. 다시 추천받기를 눌러주세요.</p>}
         <div className="recommend-cta-row">
-          <button className="recommend-submit" onClick={submitRecommendation} type="button">내 조건으로 추천받기</button>
+          <button className="recommend-submit" onClick={submitRecommendation} type="button">조건으로 추천받기</button>
           <button className="recommend-reset" onClick={resetCondition} type="button">조건 초기화</button>
         </div>
       </aside>

@@ -1167,6 +1167,93 @@ dd {
   gap: 24px;
 }
 
+.recommend-page-head {
+  display: grid;
+  gap: 10px;
+  max-width: 780px;
+}
+
+.recommend-page-head p {
+  color: #2f62e6;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.recommend-page-head h1 {
+  color: #172235;
+  font-size: clamp(30px, 4vw, 42px);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.recommend-page-head span {
+  color: #647286;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+.recommend-filter-panel {
+  align-items: start;
+  gap: 14px;
+}
+
+.recommend-filter-panel > h2 {
+  color: #172235;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.recommend-filter-panel > label,
+.recommend-filter-panel .condition-group {
+  background: #f8fafc;
+  border: 1px solid #dbe5f0;
+  border-radius: 14px;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.recommend-filter-panel > label {
+  color: #344457;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.recommend-filter-panel select,
+.recommend-filter-panel input {
+  width: 100%;
+}
+
+.recommend-filter-panel .condition-group {
+  align-content: start;
+}
+
+.recommend-filter-panel .condition-check-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 116px;
+  overflow-y: auto;
+}
+
+.recommend-filter-panel .condition-check-grid .checkline {
+  flex: 0 0 auto;
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+.recommend-filter-panel .checkline {
+  min-width: 0;
+}
+
+.recommend-filter-panel .dirty-notice,
+.recommend-filter-panel .recommend-cta-row {
+  grid-column: 1 / -1;
+}
+
 .recommend-results {
   align-items: start;
   display: grid;
@@ -1260,7 +1347,9 @@ dd {
 
 .recommend-result-heading .filter-chip-row {
   align-content: start;
-  min-height: 72px;
+  max-height: 88px;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .contract-checklist {
@@ -1658,12 +1747,27 @@ input:focus-visible {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .recommend-page {
-    grid-template-columns: 320px minmax(0, 1fr);
-  }
-
   .recommend-results {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .recommend-filter-panel {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .recommend-filter-panel > h2 {
+    grid-column: 1 / -1;
+  }
+
+  .recommend-cta-row {
+    align-items: center;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .recommend-submit,
+  .recommend-reset {
+    min-width: 160px;
   }
 
   .footer {
@@ -1701,6 +1805,10 @@ input:focus-visible {
   }
 
   .benefit-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .recommend-filter-panel {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
